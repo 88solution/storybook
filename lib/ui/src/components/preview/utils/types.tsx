@@ -12,7 +12,7 @@ export interface PreviewProps {
   docsOnly: boolean;
   options: {
     isFullscreen: boolean;
-    isToolshown: boolean;
+    showToolbar: boolean;
   };
   id: string;
   path: string;
