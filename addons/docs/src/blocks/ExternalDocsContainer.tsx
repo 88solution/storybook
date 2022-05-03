@@ -1,34 +1,19 @@
-import React, { createContext, useContext, useRef, useEffect } from 'react';
+import React from 'react';
 
-import { Preview } from '@storybook/preview-web';
+import { Preview, DocsContextProps } from '@storybook/preview-web';
 import { Path, ModuleExports, StoryIndex } from '@storybook/store';
 import { toId, AnyFramework, ComponentTitle, StoryId } from '@storybook/csf';
 
-// @ts-ignore
-import * as reactAnnotations from '@storybook/react/dist/esm/client/preview/config';
-// @ts-ignore
-import * as previewAnnotations from './.storybook/preview';
+import { DocsContext } from './DocsContext';
 
 type StoryExport = any;
 type MetaExport = any;
 type ExportName = string;
 
-const projectAnnotations = {
-  ...reactAnnotations,
-  ...previewAnnotations,
-};
-
-const DocsContext = createContext<{
-  setMeta: (meta: MetaExport) => void;
-  addStory: (story: StoryExport, storyMeta?: MetaExport) => void;
-  renderStory: (story: StoryExport, element: HTMLElement) => void;
-}>({
-  setMeta: () => {},
-  addStory: () => {},
-  renderStory: () => {},
-});
-
-export const DocsProvider: React.FC = ({ children }) => {
+export const ExternalDocsContainer: React.FC<{ projectAnnotations: any }> = ({
+  children,
+  projectAnnotations,
+}) => {
   let pageMeta: MetaExport;
   const setMeta = (m: MetaExport) => {
     pageMeta = m;
@@ -145,28 +130,58 @@ export const DocsProvider: React.FC = ({ children }) => {
     preview.renderStoryToElement(story, element);
   };
 
-  return (
-    <DocsContext.Provider value={{ setMeta, addStory, renderStory }}>
-      {children}
-    </DocsContext.Provider>
-  );
+  const docsContext: DocsContextProps = {
+    type: 'external',
+
+    id: 'external-docs',
+    title: 'External',
+    name: 'Docs',
+
+    // FIXME
+    storyIdByModuleExport: (moduleExport: any) => storyIds.get(moduleExport) || 'unknown',
+
+    storyById: (id: StoryId) => {
+      throw new Error('not implemented');
+    },
+    getStoryContext: () => {
+      throw new Error('not implemented');
+    },
+
+    componentStories: () => {
+      throw new Error('not implemented');
+    },
+    preloadedStories: () => [],
+
+    loadStory: (id: StoryId) => {
+      throw new Error('not implemented');
+    },
+    renderStoryToElement: () => {
+      throw new Error('not implemented');
+    },
+
+    setMeta,
+    addStory,
+    renderStory,
+  };
+
+  return <DocsContext.Provider value={docsContext}>{children}</DocsContext.Provider>;
 };
 
-export function Meta({ of }: { of: any }) {
-  const { setMeta } = useContext(DocsContext);
-  setMeta(of);
-  return null;
-}
+// export function Meta({ of }: { of: any }) {
+//   const { setMeta } = useContext(DocsContext);
+//   setMeta(of);
+//   return null;
+// }
 
-export function Story({ of, meta }: { of: any; meta?: any }) {
-  const { addStory, renderStory } = useContext(DocsContext);
+// export function Story({ of, meta }: { of: any; meta?: any }) {
+//   const { addStory, renderStory } = useContext(DocsContext);
 
-  addStory(of, meta);
+//   addStory(of, meta);
 
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (ref.current) renderStory(of, ref.current);
-  });
+//   const ref = useRef<HTMLDivElement>(null);
+//   useEffect(() => {
+//     if (ref.current) renderStory(of, ref.current);
+//   });
 
-  return <div ref={ref} />;
-}
+//   return <div ref={ref} />;
+// }

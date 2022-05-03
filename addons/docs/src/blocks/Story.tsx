@@ -149,6 +149,19 @@ const Story: FunctionComponent<StoryProps> = (props) => {
   const [rendered, onRendered] = makeGate();
   useEffect(onRendered);
 
+  // FIXME
+  const { of } = props as StoryRefProps;
+  const ofRef = useRef();
+  useEffect(() => {
+    if (of && context.type === 'external' && ofRef.current) {
+      context.renderStory(of, ofRef.current);
+    }
+  });
+  if (of && context.type === 'external') {
+    context.addStory(of, false);
+    return <div ref={ofRef} />;
+  }
+
   if (!story) {
     return <StorySkeleton />;
   }

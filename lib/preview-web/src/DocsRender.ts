@@ -65,7 +65,7 @@ export class DocsRender<TFramework extends AnyFramework> implements Render<TFram
     const csfFile: CSFFile<TFramework> = await this.store.loadCSFFileByStoryId(this.id);
 
     const base = {
-      legacy: this.legacy,
+      type: this.legacy ? 'legacy' : ('modern' as DocsContextProps['type']),
       id,
       title,
       name,
@@ -76,6 +76,10 @@ export class DocsRender<TFramework extends AnyFramework> implements Render<TFram
           ...this.store.getStoryContext(renderedStory),
           viewMode: 'docs' as ViewMode,
         } as StoryContextForLoaders<TFramework>),
+
+      setMeta: () => {},
+      addStory: () => {},
+      renderStory: () => {},
     };
 
     if (this.legacy) {

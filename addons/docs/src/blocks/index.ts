@@ -7,6 +7,7 @@ export * from './Description';
 export * from './DocsContext';
 export * from './DocsPage';
 export * from './DocsContainer';
+export * from './ExternalDocsContainer';
 export * from './DocsStory';
 export * from './Heading';
 export * from './Meta';
